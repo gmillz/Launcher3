@@ -119,6 +119,8 @@ public class DeviceProfile {
     public int hotseatBarSizePx;
     public int hotseatBarTopPaddingPx;
     public int hotseatBarBottomPaddingPx;
+    public int hotseatQsbHeight;
+
 
     public int hotseatBarLeftNavBarLeftPaddingPx;
     public int hotseatBarLeftNavBarRightPaddingPx;
@@ -149,11 +151,13 @@ public class DeviceProfile {
 
     // Icon badges
     public BadgeRenderer mBadgeRenderer;
+    private Context mContext;
 
     public DeviceProfile(Context context, InvariantDeviceProfile inv,
             Point minSize, Point maxSize,
             int width, int height, boolean isLandscape) {
 
+        mContext = context;
         this.inv = inv;
         this.isLandscape = isLandscape;
 
@@ -214,6 +218,8 @@ public class DeviceProfile {
 
         workspaceCellPaddingXPx = res.getDimensionPixelSize(R.dimen.dynamic_grid_cell_padding_x);
 
+        //hotseatBarHeightPx = res.getDimensionPixelSize(R.dimen.dynamic_grid_hotseat_height);
+        hotseatQsbHeight = res.getDimensionPixelSize(R.dimen.qsb_hotseat_height);
         hotseatBarTopPaddingPx =
                 res.getDimensionPixelSize(R.dimen.dynamic_grid_hotseat_top_padding);
         hotseatBarBottomPaddingPx =
@@ -381,7 +387,7 @@ public class DeviceProfile {
         hotseatCellHeightPx = iconSizePx;
 
         if (!isVerticalBarLayout()) {
-            int expectedWorkspaceHeight = availableHeightPx - hotseatBarSizePx
+            int expectedWorkspaceHeight = availableHeightPx - getHotseatHeight()
                     - pageIndicatorSizePx - topWorkspacePadding;
             float minRequiredHeight = dropTargetBarSizePx + workspaceSpringLoadedBottomSpace;
             workspaceSpringLoadShrinkFactor = Math.min(
@@ -507,7 +513,7 @@ public class DeviceProfile {
                         edgeMarginPx);
             }
         } else {
-            int paddingBottom = hotseatBarSizePx + pageIndicatorSizePx;
+            int paddingBottom = getHotseatHeight() + pageIndicatorSizePx;
             if (isTablet) {
                 // Pad the left and right of the workspace to ensure consistent spacing
                 // between all icons
@@ -549,8 +555,8 @@ public class DeviceProfile {
             return new Rect(mInsets.left,
                     mInsets.top + dropTargetBarSizePx + edgeMarginPx,
                     mInsets.left + availableWidthPx,
-                    mInsets.top + availableHeightPx - hotseatBarSizePx
-                            - pageIndicatorSizePx - edgeMarginPx);
+                    mInsets.top + availableHeightPx - getHotseatHeight() - pageIndicatorSizePx -
+                            edgeMarginPx);
         }
     }
 
@@ -623,6 +629,15 @@ public class DeviceProfile {
                 workspacePadding.bottom);
         workspace.setPageSpacing(getWorkspacePageSpacing());
 
+        // Only display when enabled
+        boolean topSearchBar = Utilities.isTopSearchBar(launcher);
+        if (topSearchBar) {
+            /*View qsbContainer = launcher.getQsbContainer();
+            lp = (FrameLayout.LayoutParams) qsbContainer.getLayoutParams();
+            lp.topMargin = mInsets.top + workspacePadding.top;
+            qsbContainer.setLayoutParams(lp);*/
+        }
+
         // Layout the hotseat
         Hotseat hotseat = (Hotseat) launcher.findViewById(R.id.hotseat);
         lp = (FrameLayout.LayoutParams) hotseat.getLayoutParams();
@@ -648,7 +663,7 @@ public class DeviceProfile {
                     + paddingLeft + paddingRight;
             lp.height = LayoutParams.MATCH_PARENT;
 
-            hotseat.getLayout().setPadding(mInsets.left + cellLayoutPaddingLeftRightPx
+            hotseat.getCellLayout().setPadding(mInsets.left + cellLayoutPaddingLeftRightPx
                             + paddingLeft,
                     mInsets.top,
                     mInsets.right + cellLayoutPaddingLeftRightPx + paddingRight,
@@ -657,8 +672,8 @@ public class DeviceProfile {
             // Pad the hotseat with the workspace padding calculated above
             lp.gravity = Gravity.BOTTOM;
             lp.width = LayoutParams.MATCH_PARENT;
-            lp.height = hotseatBarSizePx + mInsets.bottom;
-            hotseat.getLayout().setPadding(hotseatAdjustment + workspacePadding.left
+            lp.height = getHotseatHeight() + mInsets.bottom;
+            hotseat.getCellLayout().setPadding(hotseatAdjustment + workspacePadding.left
                             + cellLayoutPaddingLeftRightPx,
                     hotseatBarTopPaddingPx,
                     hotseatAdjustment + workspacePadding.right + cellLayoutPaddingLeftRightPx,
@@ -668,8 +683,8 @@ public class DeviceProfile {
             // to ensure that we have space for the folders
             lp.gravity = Gravity.BOTTOM;
             lp.width = LayoutParams.MATCH_PARENT;
-            lp.height = hotseatBarSizePx + mInsets.bottom;
-            hotseat.getLayout().setPadding(hotseatAdjustment + workspacePadding.left
+            lp.height = getHotseatHeight() + mInsets.bottom;
+            hotseat.getCellLayout().setPadding(hotseatAdjustment + workspacePadding.left
                             + cellLayoutPaddingLeftRightPx,
                     hotseatBarTopPaddingPx,
                     hotseatAdjustment + workspacePadding.right + cellLayoutPaddingLeftRightPx,
@@ -692,7 +707,7 @@ public class DeviceProfile {
                 // Put the page indicators above the hotseat
                 lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
                 lp.height = pageIndicatorSizePx;
-                lp.bottomMargin = hotseatBarSizePx + mInsets.bottom;
+                lp.bottomMargin = getHotseatHeight() + mInsets.bottom;
             }
             pageIndicator.setLayoutParams(lp);
         }
@@ -779,5 +794,13 @@ public class DeviceProfile {
         context.orientation = orientation;
         return c.createConfigurationContext(context);
 
+    }
+
+    public int getHotseatHeight() {
+        boolean bottomSearchBar = Utilities.isBottomSearchBar(mContext);
+        if (bottomSearchBar) {
+            return hotseatBarSizePx + hotseatQsbHeight;
+        }
+        return hotseatBarSizePx;
     }
 }

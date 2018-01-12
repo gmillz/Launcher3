@@ -76,7 +76,7 @@ public class Hotseat extends FrameLayout
                 Themes.getAttrColor(context, android.R.attr.colorPrimary), 0);
         mBackground = new ColorDrawable(mBackgroundColor);
         if (!FeatureFlags.LAUNCHER3_GRADIENT_ALL_APPS) {
-            setBackground(mBackground);
+            //setBackground(mBackground);
         }
     }
 

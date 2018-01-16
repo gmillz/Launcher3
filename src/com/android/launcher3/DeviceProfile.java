@@ -663,7 +663,7 @@ public class DeviceProfile {
                     + paddingLeft + paddingRight;
             lp.height = LayoutParams.MATCH_PARENT;
 
-            hotseat.getCellLayout().setPadding(mInsets.left + cellLayoutPaddingLeftRightPx
+            hotseat.getLayoutContainer().setPadding(mInsets.left + cellLayoutPaddingLeftRightPx
                             + paddingLeft,
                     mInsets.top,
                     mInsets.right + cellLayoutPaddingLeftRightPx + paddingRight,
@@ -673,7 +673,7 @@ public class DeviceProfile {
             lp.gravity = Gravity.BOTTOM;
             lp.width = LayoutParams.MATCH_PARENT;
             lp.height = getHotseatHeight() + mInsets.bottom;
-            hotseat.getCellLayout().setPadding(hotseatAdjustment + workspacePadding.left
+            hotseat.getLayoutContainer().setPadding(hotseatAdjustment + workspacePadding.left
                             + cellLayoutPaddingLeftRightPx,
                     hotseatBarTopPaddingPx,
                     hotseatAdjustment + workspacePadding.right + cellLayoutPaddingLeftRightPx,
@@ -684,7 +684,7 @@ public class DeviceProfile {
             lp.gravity = Gravity.BOTTOM;
             lp.width = LayoutParams.MATCH_PARENT;
             lp.height = getHotseatHeight() + mInsets.bottom;
-            hotseat.getCellLayout().setPadding(hotseatAdjustment + workspacePadding.left
+            hotseat.getLayoutContainer().setPadding(hotseatAdjustment + workspacePadding.left
                             + cellLayoutPaddingLeftRightPx,
                     hotseatBarTopPaddingPx,
                     hotseatAdjustment + workspacePadding.right + cellLayoutPaddingLeftRightPx,
